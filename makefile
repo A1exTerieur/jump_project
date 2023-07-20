@@ -8,7 +8,7 @@ BINDIR = bin
 
 SRCS = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(patsubst $(SRCDIR)/%.c,$(OBJDIR)/%.o,$(SRCS))
-TARGET = $(BINDIR)/projet
+TARGET = projet
 
 all: $(TARGET)
 
