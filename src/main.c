@@ -3,6 +3,7 @@
 #include "../include/const.h"
 #include "../include/player.h"
 #include "../include/platform.h"
+#include "../include/light.h"
 
 // Fonction pour initialiser la SDL
 int initializeSDL(SDL_Window **window, SDL_Renderer **renderer)
@@ -19,8 +20,8 @@ int initializeSDL(SDL_Window **window, SDL_Renderer **renderer)
         printf("Erreur lors de la création de la fenêtre : %s\n", SDL_GetError());
         return 0;
     }
-
     *renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED);
+    
     if (*renderer == NULL)
     {
         printf("Erreur lors de la création du renderer : %s\n", SDL_GetError());
@@ -48,6 +49,13 @@ void runGame(SDL_Renderer *renderer)
     };
     int numPlatforms = sizeof(platforms) / sizeof(Platform);
 
+    Light lights[] = {
+        {5, 5, 1, 0},
+        {15, 8, 10, 0},
+        // Ajoutez plus de lumières selon vos besoins
+    };
+    int numLights = sizeof(lights) / sizeof(Light);
+
     // Exemple de joueur
     Player player = {200, 20, 25, 25, 0, 0, 0, 0, 0, 0};
 
@@ -59,7 +67,12 @@ void runGame(SDL_Renderer *renderer)
     // Calculer le nombre de carrés horizontaux et verticaux sur l'écran
     int num_horizontal_squares = SCREEN_WIDTH / SQUARE_SIZE;
     int num_vertical_squares = SCREEN_HEIGHT / SQUARE_SIZE;
+
+    int num_horizontal_squares_light = SCREEN_WIDTH / LIGHT_SQUARE_SIZE;
+    int num_vertical_squares_light = SCREEN_HEIGHT / LIGHT_SQUARE_SIZE;
     // Boucle principale du jeu
+
+   
     while (!quit)
     {
         while (SDL_PollEvent(&event))
@@ -92,22 +105,26 @@ void runGame(SDL_Renderer *renderer)
         SDL_RenderClear(renderer);
 
         // Dessiner les plateformes de la section courante uniquement
-        for (int i = 0; i < numPlatforms; i++)
+        draw_platform(renderer, platforms, numPlatforms, currentSection);
+        // Dessiner les lumières de la section courante uniquement
+        draw_light(renderer, lights, numLights, currentSection);
+        // Dessiner les carrés vides
+        /*for (int i = 0; i < num_horizontal_squares_light; i++)
         {
-            Platform platform = platforms[i];
-            if (platform.section == currentSection)
+            for (int j = 0; j < num_vertical_squares_light; j++)
             {
-                // Calculer les coordonnées et la taille de la plateforme en pixels
-                int x = platform.x * SQUARE_SIZE;
-                int y = platform.y * SQUARE_SIZE;
-                int width = platform.width * SQUARE_SIZE;
-                int height = platform.height * SQUARE_SIZE; // Vous pouvez ajuster la hauteur de la plateforme selon vos préférences
+                // Calculer les coordonnées du carré
+                int x = i * LIGHT_SQUARE_SIZE;
+                int y = j * LIGHT_SQUARE_SIZE;
 
-                SDL_Rect rect = {x, y, width, height};
-                SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
-                SDL_RenderFillRect(renderer, &rect);
+                // Dessiner le carré vide
+                SDL_Rect rect = {x, y, LIGHT_SQUARE_SIZE, LIGHT_SQUARE_SIZE};
+
+                // Dessiner les bordures autour du carré
+                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                SDL_RenderDrawRect(renderer, &rect);
             }
-        }
+        }*/
         // Dessiner les carrés vides
         for (int i = 0; i < num_horizontal_squares; i++)
         {
@@ -161,12 +178,12 @@ int main()
 {
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
-
+    
     if (!initializeSDL(&window, &renderer))
     {
         return 1;
     }
-
+     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     runGame(renderer);
 
     // Libérer les ressources

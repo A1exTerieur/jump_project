@@ -2,4 +2,4 @@
 #include "../include/struct.h"
 #include "../include/const.h"
 
-void drawPlatform(SDL_Renderer* renderer, Platform platform);
+void draw_platform(SDL_Renderer *renderer, Platform *platforms, int numPlatforms, int currentSection);

@@ -18,4 +18,13 @@ typedef struct
     int isInAir;
 } Player;
 
+typedef struct
+{
+    int x;         // Position x de la lumière sur la grille
+    int y;         // Position y de la lumière sur la grille
+    int intensity; // Ajout de l'attribut intensity
+    int section;   // Section de la lumière
+    
+} Light;
+
 #endif // STRUCT_H
