@@ -115,50 +115,50 @@ void platformCollisionPlayer(Player *player, Platform *platforms, int numPlatfor
 
         // Vérifier si le joueur se chevauche avec la plateforme de la section courante
         if (platform.section == currentSection &&
-            player->x < platform.x + platform.width &&
-            player->x + player->width > platform.x &&
-            player->y + player->height > platform.y &&
-            player->y < platform.y + platform.height)
+            player->x < (platform.x + platform.width) * SQUARE_SIZE &&
+            (player->x + player->width) > platform.x * SQUARE_SIZE &&
+            (player->y + player->height) > platform.y * SQUARE_SIZE &&
+            player->y < (platform.y + platform.height) * SQUARE_SIZE)
         {
             onPlatform = 1; // Le joueur est sur une plateforme
 
-            if (player->dy > 0 && player->y + player->height - player->dy <= platform.y)
+            if (player->dy > 0 && (player->y + player->height - player->dy) <= platform.y * SQUARE_SIZE)
             {
                 // Atterrissage sur la plateforme depuis le haut
-                player->y = platform.y - player->height;
+                player->y = platform.y * SQUARE_SIZE - player->height;
                 player->dy = 0;
                 player->isInAir = 0;
             }
-            else if (player->dy < 0 && player->y - player->dy >= platform.y + platform.height)
+            else if (player->dy < 0 && player->y - player->dy >= (platform.y + platform.height) * SQUARE_SIZE)
             {
                 // Collision avec la plateforme depuis le bas
-                player->y = platform.y + platform.height;
+                player->y = (platform.y + platform.height) * SQUARE_SIZE;
                 player->dy = 0;
             }
-            else if (player->dx > 0 && player->x + player->width > platform.x && player->x + player->width <= platform.x + platform.width)
+            else if (player->dx > 0 && (player->x + player->width) > platform.x * SQUARE_SIZE && (player->x + player->width) <= (platform.x + platform.width) * SQUARE_SIZE)
             {
                 // Collision avec la gauche de la plateforme
-                if (player->y + player->height > platform.y && player->y < platform.y + platform.height)
+                if ((player->y + player->height) > platform.y * SQUARE_SIZE && player->y < (platform.y + platform.height) * SQUARE_SIZE)
                 {
                     // Ajuster la position du joueur à droite de la plateforme
-                    player->x = platform.x - player->width;
+                    player->x = platform.x * SQUARE_SIZE - player->width;
                     player->dx = 0;
                 }
             }
-            else if (player->dx < 0 && player->x < platform.x + platform.width && player->x >= platform.x)
+            else if (player->dx < 0 && player->x < (platform.x + platform.width) * SQUARE_SIZE && player->x >= platform.x * SQUARE_SIZE)
             {
                 // Collision avec la droite de la plateforme
-                if (player->y + player->height > platform.y && player->y < platform.y + platform.height)
+                if ((player->y + player->height) > platform.y * SQUARE_SIZE && player->y < (platform.y + platform.height) * SQUARE_SIZE)
                 {
                     // Ajuster la position du joueur à gauche de la plateforme
-                    player->x = platform.x + platform.width;
+                    player->x = (platform.x + platform.width) * SQUARE_SIZE;
                     player->dx = 0;
                 }
             }
-            else if (player->dy > 0 && player->y + player->height <= platform.y)
+            else if (player->dy > 0 && player->y + player->height <= platform.y * SQUARE_SIZE)
             {
                 // Collision avec le dessous de la plateforme lors du saut
-                player->y = platform.y - player->height;
+                player->y = platform.y * SQUARE_SIZE - player->height;
                 player->dy = 0;
             }
         }

@@ -38,24 +38,27 @@ void runGame(SDL_Renderer *renderer)
 
     // Exemple de plateformes avec les sections correspondantes
     Platform platforms[] = {
-        {300, 400, 200, 20, 0}, // Plateforme de la section 0
-        {200, 300, 150, 20, 0}, // Plateforme de la section 1
-        {250, 200, 150, 20, 0}, // Plateforme de la section 0
-        {300, 100, 150, 20, 0}, // Plateforme de la section 2
-        {400, 100, 150, 20, 1},
-        {0, SCREEN_HEIGHT - 40, 300, 20, 1},          // Plateforme de la section 2
-        {0, SCREEN_HEIGHT - 20, SCREEN_WIDTH, 20, 0}, // Plateforme de la section 0
-        {200, SCREEN_HEIGHT - 100, 50, 100, 0}        // Plateforme de la section 1
+        {0, 23, 20, 1, 1},
+
+        {20, 10, 5, 1, 0},
+        {10, 10, 5, 1, 0},
+        {0, 18, 5, 1, 0},
+        {0, 19, 2, 5, 0}, // Plateforme de la section 0
+        {0, 24, 25, 1, 0} // Plateforme de la section 0
     };
     int numPlatforms = sizeof(platforms) / sizeof(Platform);
 
     // Exemple de joueur
-    Player player = {200, 20, 20, 20, 0, 0, 0, 0, 0, 0};
+    Player player = {200, 20, 25, 25, 0, 0, 0, 0, 0, 0};
 
     int currentSection = 0;
 
     Uint32 lastUpdate = SDL_GetTicks(); // Temps écoulé depuis le démarrage de l'application
+    // Définir la taille de chaque carré vide
 
+    // Calculer le nombre de carrés horizontaux et verticaux sur l'écran
+    int num_horizontal_squares = SCREEN_WIDTH / SQUARE_SIZE;
+    int num_vertical_squares = SCREEN_HEIGHT / SQUARE_SIZE;
     // Boucle principale du jeu
     while (!quit)
     {
@@ -94,9 +97,32 @@ void runGame(SDL_Renderer *renderer)
             Platform platform = platforms[i];
             if (platform.section == currentSection)
             {
-                SDL_Rect rect = {platform.x, platform.y, platform.width, platform.height};
+                // Calculer les coordonnées et la taille de la plateforme en pixels
+                int x = platform.x * SQUARE_SIZE;
+                int y = platform.y * SQUARE_SIZE;
+                int width = platform.width * SQUARE_SIZE;
+                int height = platform.height * SQUARE_SIZE; // Vous pouvez ajuster la hauteur de la plateforme selon vos préférences
+
+                SDL_Rect rect = {x, y, width, height};
                 SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
                 SDL_RenderFillRect(renderer, &rect);
+            }
+        }
+        // Dessiner les carrés vides
+        for (int i = 0; i < num_horizontal_squares; i++)
+        {
+            for (int j = 0; j < num_vertical_squares; j++)
+            {
+                // Calculer les coordonnées du carré
+                int x = i * SQUARE_SIZE;
+                int y = j * SQUARE_SIZE;
+
+                // Dessiner le carré vide
+                SDL_Rect rect = {x, y, SQUARE_SIZE, SQUARE_SIZE};
+
+                // Dessiner les bordures autour du carré
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                SDL_RenderDrawRect(renderer, &rect);
             }
         }
 

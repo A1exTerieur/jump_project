@@ -8,3 +8,4 @@
 #define GRAVITY 1
 #define PLAYER_JUMP_FORCE 15
 #define UPDATE_RATE 20 // Temps en millisecondes entre chaque mise à jour (environ 60 FPS)
+#define SQUARE_SIZE 32
