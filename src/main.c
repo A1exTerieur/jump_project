@@ -50,8 +50,8 @@ void runGame(SDL_Renderer *renderer)
     int numPlatforms = sizeof(platforms) / sizeof(Platform);
 
     Light lights[] = {
-        {5, 5, 1, 0, 0},
-        {15, 8, 10, 0, 0},
+        {5, 5, 5, 0, 0},
+        {15, 8, 3, 0, 0},
         // Ajoutez plus de lumières selon vos besoins
     };
     int numLights = sizeof(lights) / sizeof(Light);
@@ -100,7 +100,7 @@ void runGame(SDL_Renderer *renderer)
         }
 
         // Effacer l'écran
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
         // Dessiner les plateformes de la section courante uniquement
@@ -137,7 +137,7 @@ void runGame(SDL_Renderer *renderer)
                 SDL_Rect rect = {x, y, SQUARE_SIZE, SQUARE_SIZE};
 
                 // Dessiner les bordures autour du carré
-                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
                 SDL_RenderDrawRect(renderer, &rect);
             }
         }

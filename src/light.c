@@ -1,5 +1,6 @@
 #include "../include/light.h"
 
+
 void fillLight(SDL_Renderer *renderer, int x, int y, int intensity, int size, int frame)
 {
     int maxFrame = ANIMATION_FRAMES / 2; // La moitié du nombre total de frames pour la transition en taille
@@ -11,21 +12,22 @@ void fillLight(SDL_Renderer *renderer, int x, int y, int intensity, int size, in
         float alpha = (float)(intensity - distance) / (float)intensity;
 
         // Rendre l'alpha plus doux pour créer un effet de transparence
-        alpha = alpha * alpha;
+    
 
         // Calculer la taille actuelle de la lumière en fonction de la distance du centre
         int currentSize;
         if (frame <= maxFrame)
         {
-            // Interpolation de la taille normale à la taille maximale de l'intensité
+            // Expansion initiale
             float scale = (float)frame / (float)maxFrame;
             currentSize = size + (int)((float)distance * LIGHT_SQUARE_SIZE * scale);
         }
         else
         {
-            // Interpolation de la taille maximale de l'intensité à la taille normale
-            float scale = (float)(frame - maxFrame) / (float)maxFrame;
-            currentSize = size + (int)((float)distance * LIGHT_SQUARE_SIZE * (1.0 - scale));
+            // Rétrécissement progressif après l'expansion
+            int reversedFrame = ANIMATION_FRAMES - frame;
+            float scale = (float)reversedFrame / (float)maxFrame;
+            currentSize = size + (int)((float)distance * LIGHT_SQUARE_SIZE * scale);
         }
 
         for (int dx = -distance; dx <= distance; dx++)
@@ -40,7 +42,7 @@ void fillLight(SDL_Renderer *renderer, int x, int y, int intensity, int size, in
                     int r = 255;
                     int g = 255;
                     int b = 0;
-                    int alphaValue = (int)(128 * alpha * alpha * alpha); // Ajuster la valeur de l'alpha pour augmenter l'opacité
+                    int alphaValue = (int)(128 *alpha); // Ajuster la valeur de l'alpha pour augmenter l'opacité
 
                     SDL_SetRenderDrawColor(renderer, r, g, b, alphaValue);
 
@@ -52,6 +54,13 @@ void fillLight(SDL_Renderer *renderer, int x, int y, int intensity, int size, in
         }
     }
 }
+
+
+
+
+
+
+
 void draw_light(SDL_Renderer *renderer, Light *lights, int numLights, int currentSection, int frame)
 {
     for (int i = 0; i < numLights; i++)
@@ -59,8 +68,8 @@ void draw_light(SDL_Renderer *renderer, Light *lights, int numLights, int curren
         Light light = lights[i];
         if (light.section == currentSection)
         {
-            int x = light.x * SQUARE_SIZE + LIGHT_SQUARE_SIZE / 2;
-            int y = light.y * SQUARE_SIZE + LIGHT_SQUARE_SIZE / 2;
+            int x = light.x * SQUARE_SIZE + LIGHT_SQUARE_SIZE;
+            int y = light.y * SQUARE_SIZE + LIGHT_SQUARE_SIZE;
             int intensity = light.intensity;
             int size = LIGHT_SQUARE_SIZE; // Taille de la lumière initiale
 
