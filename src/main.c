@@ -21,7 +21,7 @@ int initializeSDL(SDL_Window **window, SDL_Renderer **renderer)
         return 0;
     }
     *renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED);
-    
+
     if (*renderer == NULL)
     {
         printf("Erreur lors de la création du renderer : %s\n", SDL_GetError());
@@ -34,7 +34,7 @@ int initializeSDL(SDL_Window **window, SDL_Renderer **renderer)
 void runGame(SDL_Renderer *renderer)
 {
     int quit = 0;
-
+    int frame = 0; // Frame actuel pour l'animation des lumières
     SDL_Event event;
 
     // Exemple de plateformes avec les sections correspondantes
@@ -50,8 +50,8 @@ void runGame(SDL_Renderer *renderer)
     int numPlatforms = sizeof(platforms) / sizeof(Platform);
 
     Light lights[] = {
-        {5, 5, 1, 0},
-        {15, 8, 10, 0},
+        {5, 5, 1, 0, 0},
+        {15, 8, 10, 0, 0},
         // Ajoutez plus de lumières selon vos besoins
     };
     int numLights = sizeof(lights) / sizeof(Light);
@@ -72,7 +72,6 @@ void runGame(SDL_Renderer *renderer)
     int num_vertical_squares_light = SCREEN_HEIGHT / LIGHT_SQUARE_SIZE;
     // Boucle principale du jeu
 
-   
     while (!quit)
     {
         while (SDL_PollEvent(&event))
@@ -107,7 +106,7 @@ void runGame(SDL_Renderer *renderer)
         // Dessiner les plateformes de la section courante uniquement
         draw_platform(renderer, platforms, numPlatforms, currentSection);
         // Dessiner les lumières de la section courante uniquement
-        draw_light(renderer, lights, numLights, currentSection);
+        draw_light(renderer, lights, numLights, currentSection, frame);
         // Dessiner les carrés vides
         /*for (int i = 0; i < num_horizontal_squares_light; i++)
         {
@@ -148,7 +147,8 @@ void runGame(SDL_Renderer *renderer)
 
         // Mettre à jour l'affichage
         SDL_RenderPresent(renderer);
-
+        // Augmenter le frame pour l'animation des lumières
+        frame = (frame + 1) % ANIMATION_FRAMES;
         // Vérifier si le joueur dépasse la bordure supérieure
         if (player.y < 0 - player.height)
         {
@@ -178,12 +178,12 @@ int main()
 {
     SDL_Window *window = NULL;
     SDL_Renderer *renderer = NULL;
-    
+
     if (!initializeSDL(&window, &renderer))
     {
         return 1;
     }
-     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
     runGame(renderer);
 
     // Libérer les ressources

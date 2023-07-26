@@ -10,3 +10,5 @@
 #define UPDATE_RATE 20 // Temps en millisecondes entre chaque mise à jour (environ 60 FPS)
 #define SQUARE_SIZE 32
 #define LIGHT_SQUARE_SIZE 16
+#define ANIMATION_DELAY 0
+#define ANIMATION_FRAMES 200

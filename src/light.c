@@ -1,34 +1,58 @@
 #include "../include/light.h"
 
-
-
-void fillLight(SDL_Renderer *renderer, int x, int y, int intensity)
+void fillLight(SDL_Renderer *renderer, int x, int y, int intensity, int size, int frame)
 {
-    // Remplir les carrés voisins en fonction de l'intensité de la lumière
-    for (int dx = -intensity; dx <= intensity; dx++)
+    int maxFrame = ANIMATION_FRAMES / 2; // La moitié du nombre total de frames pour la transition en taille
+
+    // Remplir les carrés voisins en fonction de la distance du centre de la lumière
+    for (int distance = 0; distance <= intensity; distance++)
     {
-        for (int dy = -intensity; dy <= intensity; dy++)
+        // Calculer l'intensité de l'alpha en fonction de la distance
+        float alpha = (float)(intensity - distance) / (float)intensity;
+
+        // Rendre l'alpha plus doux pour créer un effet de transparence
+        alpha = alpha * alpha;
+
+        // Calculer la taille actuelle de la lumière en fonction de la distance du centre
+        int currentSize;
+        if (frame <= maxFrame)
         {
-            int distSquared = dx * dx + dy * dy;
-            if (distSquared <= intensity * intensity)
+            // Interpolation de la taille normale à la taille maximale de l'intensité
+            float scale = (float)frame / (float)maxFrame;
+            currentSize = size + (int)((float)distance * LIGHT_SQUARE_SIZE * scale);
+        }
+        else
+        {
+            // Interpolation de la taille maximale de l'intensité à la taille normale
+            float scale = (float)(frame - maxFrame) / (float)maxFrame;
+            currentSize = size + (int)((float)distance * LIGHT_SQUARE_SIZE * (1.0 - scale));
+        }
+
+        for (int dx = -distance; dx <= distance; dx++)
+        {
+            for (int dy = -distance; dy <= distance; dy++)
             {
-                // Calculer l'intensité de l'alpha en fonction de la distance
-                float alpha = (float)(intensity * intensity - distSquared) / (float)(intensity * intensity);
+                int distSquared = dx * dx + dy * dy;
+                if (distSquared <= distance * distance)
+                {
+                    // Réglage de la couleur avec un alpha transparent
+                    // Vous pouvez ajuster les valeurs des canaux RGB pour augmenter le contraste
+                    int r = 255;
+                    int g = 255;
+                    int b = 0;
+                    int alphaValue = (int)(128 * alpha * alpha * alpha); // Ajuster la valeur de l'alpha pour augmenter l'opacité
 
-                // Rendre l'alpha plus doux pour créer un effet de transparence
-                alpha = alpha * alpha;
+                    SDL_SetRenderDrawColor(renderer, r, g, b, alphaValue);
 
-                // Réglage de la couleur avec un alpha transparent
-                SDL_SetRenderDrawColor(renderer, 255, 255, 0, (int)(255 * alpha));
-               
-                SDL_Rect rect = {x + dx * LIGHT_SQUARE_SIZE, y + dy * LIGHT_SQUARE_SIZE, LIGHT_SQUARE_SIZE, LIGHT_SQUARE_SIZE};
-                SDL_RenderFillRect(renderer, &rect);
+                    // Dessiner le carré de lumière avec la taille actuelle
+                    SDL_Rect rect = {x + dx * LIGHT_SQUARE_SIZE - currentSize / 2, y + dy * LIGHT_SQUARE_SIZE - currentSize / 2, currentSize, currentSize};
+                    SDL_RenderFillRect(renderer, &rect);
+                }
             }
         }
     }
 }
-
-void draw_light(SDL_Renderer *renderer, Light *lights, int numLights, int currentSection)
+void draw_light(SDL_Renderer *renderer, Light *lights, int numLights, int currentSection, int frame)
 {
     for (int i = 0; i < numLights; i++)
     {
@@ -38,8 +62,13 @@ void draw_light(SDL_Renderer *renderer, Light *lights, int numLights, int curren
             int x = light.x * SQUARE_SIZE + LIGHT_SQUARE_SIZE / 2;
             int y = light.y * SQUARE_SIZE + LIGHT_SQUARE_SIZE / 2;
             int intensity = light.intensity;
+            int size = LIGHT_SQUARE_SIZE; // Taille de la lumière initiale
 
-            fillLight(renderer, x, y, intensity);
+            fillLight(renderer, x, y, intensity, size, frame);
+
+            // Mettre à jour le frame pour l'animation de la lumière
+            light.frame = (light.frame + 1) % ANIMATION_FRAMES;
+            lights[i] = light;
         }
     }
 }
