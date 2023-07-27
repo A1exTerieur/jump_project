@@ -24,8 +24,16 @@ typedef struct
     int y;         // Position y de la lumière sur la grille
     int intensity; // Ajout de l'attribut intensity
     int section;
-    int frame; // Section de la lumière
+    int animationState; // Ajout de l'état d'animation
 
 } Light;
 
+typedef struct
+{
+    int x;
+    int y;
+    int resolution;
+    SDL_Texture *texture;
+    int section;
+} Texture;
 #endif // STRUCT_H

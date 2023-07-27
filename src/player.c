@@ -60,7 +60,7 @@ void movePlayer(Player *player, const Uint8 *keystate)
 
 void jumpPlayer(Player *player, const Uint8 *keystate)
 {
-    if (keystate[SDL_SCANCODE_SPACE] && player->isJumping == 0 && player->dy == 0)
+    if (keystate[SDL_SCANCODE_SPACE] && player->isJumping == 0 && player->dy == 0 && player->isInAir == 0)
     {
         player->isJumping = 1;
     }

@@ -1,9 +1,11 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include "../include/struct.h"
 #include "../include/const.h"
 #include "../include/player.h"
 #include "../include/platform.h"
 #include "../include/light.h"
+#include "../include/texture.h"
 
 // Fonction pour initialiser la SDL
 int initializeSDL(SDL_Window **window, SDL_Renderer **renderer)
@@ -34,8 +36,10 @@ int initializeSDL(SDL_Window **window, SDL_Renderer **renderer)
 void runGame(SDL_Renderer *renderer)
 {
     int quit = 0;
-    int frame = 0; // Frame actuel pour l'animation des lumières
+    Texture *noTexture = loadTexture(renderer, "./img/no_texture.png", 0);
+
     SDL_Event event;
+    // Dans la fonction runGame avant la boucle principale
 
     // Exemple de plateformes avec les sections correspondantes
     Platform platforms[] = {
@@ -43,6 +47,7 @@ void runGame(SDL_Renderer *renderer)
 
         {20, 10, 5, 1, 0},
         {10, 10, 5, 1, 0},
+        {10, 11, 5, 1, 0},
         {0, 18, 5, 1, 0},
         {0, 19, 2, 5, 0}, // Plateforme de la section 0
         {0, 24, 25, 1, 0} // Plateforme de la section 0
@@ -50,8 +55,8 @@ void runGame(SDL_Renderer *renderer)
     int numPlatforms = sizeof(platforms) / sizeof(Platform);
 
     Light lights[] = {
-        {5, 5, 5, 0, 0},
-        {15, 8, 3, 0, 0},
+
+        {15, 8, 4, 0, 0}
         // Ajoutez plus de lumières selon vos besoins
     };
     int numLights = sizeof(lights) / sizeof(Light);
@@ -62,14 +67,14 @@ void runGame(SDL_Renderer *renderer)
     int currentSection = 0;
 
     Uint32 lastUpdate = SDL_GetTicks(); // Temps écoulé depuis le démarrage de l'application
-    // Définir la taille de chaque carré vide
+                                        // Définir la taille de chaque carré vide
 
     // Calculer le nombre de carrés horizontaux et verticaux sur l'écran
-    int num_horizontal_squares = SCREEN_WIDTH / SQUARE_SIZE;
-    int num_vertical_squares = SCREEN_HEIGHT / SQUARE_SIZE;
+    // int num_horizontal_squares = SCREEN_WIDTH / SQUARE_SIZE;
+    // int num_vertical_squares = SCREEN_HEIGHT / SQUARE_SIZE;
 
-    int num_horizontal_squares_light = SCREEN_WIDTH / LIGHT_SQUARE_SIZE;
-    int num_vertical_squares_light = SCREEN_HEIGHT / LIGHT_SQUARE_SIZE;
+    // int num_horizontal_squares_light = SCREEN_WIDTH / LIGHT_SQUARE_SIZE;
+    // int num_vertical_squares_light = SCREEN_HEIGHT / LIGHT_SQUARE_SIZE;
     // Boucle principale du jeu
 
     while (!quit)
@@ -94,19 +99,30 @@ void runGame(SDL_Renderer *renderer)
         if (deltaTime >= UPDATE_RATE)
         {
             updatePlayer(&player, keystate, platforms, numPlatforms, currentSection);
-
+            // Mettre à jour l'état d'animation des lumières
+            for (int i = 0; i < numLights; i++)
+            {
+                Light *light = &lights[i];
+                light->animationState += 1;
+                if (light->animationState >= ANIMATION_DURATION)
+                {
+                    light->animationState = 0;
+                }
+            }
             // Mettre à jour le temps de la dernière mise à jour
             lastUpdate = currentTicks;
         }
 
         // Effacer l'écran
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(renderer, 32, 32, 32, 255);
         SDL_RenderClear(renderer);
 
-        // Dessiner les plateformes de la section courante uniquement
-        draw_platform(renderer, platforms, numPlatforms, currentSection);
         // Dessiner les lumières de la section courante uniquement
-        draw_light(renderer, lights, numLights, currentSection, frame);
+        draw_light(renderer, lights, numLights, currentSection);
+        // Dessiner les plateformes de la section courante uniquement
+        draw_platform(renderer, platforms, numPlatforms, currentSection, noTexture);
+        // Dessinez l'image à la position (100, 100) avec sa résolution de base
+
         // Dessiner les carrés vides
         /*for (int i = 0; i < num_horizontal_squares_light; i++)
         {
@@ -120,12 +136,12 @@ void runGame(SDL_Renderer *renderer)
                 SDL_Rect rect = {x, y, LIGHT_SQUARE_SIZE, LIGHT_SQUARE_SIZE};
 
                 // Dessiner les bordures autour du carré
-                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
                 SDL_RenderDrawRect(renderer, &rect);
             }
         }*/
         // Dessiner les carrés vides
-        for (int i = 0; i < num_horizontal_squares; i++)
+        /*for (int i = 0; i < num_horizontal_squares; i++)
         {
             for (int j = 0; j < num_vertical_squares; j++)
             {
@@ -140,15 +156,11 @@ void runGame(SDL_Renderer *renderer)
                 SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
                 SDL_RenderDrawRect(renderer, &rect);
             }
-        }
-
+        }*/
         // Dessiner le joueur
         drawPlayer(renderer, player);
-
         // Mettre à jour l'affichage
         SDL_RenderPresent(renderer);
-        // Augmenter le frame pour l'animation des lumières
-        frame = (frame + 1) % ANIMATION_FRAMES;
         // Vérifier si le joueur dépasse la bordure supérieure
         if (player.y < 0 - player.height)
         {
@@ -172,6 +184,7 @@ void runGame(SDL_Renderer *renderer)
             player.y = 0;
         }
     }
+    SDL_DestroyTexture(noTexture->texture);
 }
 
 int main()
