@@ -52,13 +52,12 @@ void fillLight(SDL_Renderer *renderer, int x, int y, int intensity, int size, in
     }
 }
 
-void draw_light(SDL_Renderer *renderer, Light *lights, int numLights, int currentSection)
+void draw_lights(SDL_Renderer *renderer, Light *lights, int numLights)
 {
     for (int i = 0; i < numLights; i++)
     {
         Light *light = &lights[i]; // Utiliser un pointeur pour accéder à la lumière
-        if (light->section == currentSection)
-        {
+       
             // Mettre à jour l'état d'animation de la lumière
             light->animationState++;
             if (light->animationState >= ANIMATION_DURATION)
@@ -71,6 +70,6 @@ void draw_light(SDL_Renderer *renderer, Light *lights, int numLights, int curren
             int intensity = light->intensity;
             int size = LIGHT_SQUARE_SIZE; // Taille de la lumière initiale
             fillLight(renderer, x, y, intensity, size, light->animationState);
-        }
+        
     }
 }

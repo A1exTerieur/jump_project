@@ -1,10 +1,15 @@
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+
+
 #ifndef STRUCT_H
 #define STRUCT_H
 
 // Définir la structure pour représenter une plateforme
 typedef struct
 {
-    int x, y, width, height, section;
+    int x, y, width, height;
+    char * texture;
 } Platform;
 
 // Définir la structure pour représenter le joueur
@@ -34,6 +39,17 @@ typedef struct
     int y;
     int resolution;
     SDL_Texture *texture;
-    int section;
+    char * name;
 } Texture;
+
+
+typedef struct
+{
+    int id;
+    Platform * platforms;
+    int numPlatforms;
+    Light * lights;  
+    int numLights;      
+} Section;
+
 #endif // STRUCT_H

@@ -11,3 +11,4 @@
 #define SQUARE_SIZE 32
 #define LIGHT_SQUARE_SIZE 16
 #define ANIMATION_DURATION 1000 // Durée totale de l'animation (en millisecondes)
+#define TEXTURE_FOLDER_PATH "./assets/texture"

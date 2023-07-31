@@ -6,6 +6,8 @@
 #include "../include/platform.h"
 #include "../include/light.h"
 #include "../include/texture.h"
+#include "../include/section.h"
+
 
 // Fonction pour initialiser la SDL
 int initializeSDL(SDL_Window **window, SDL_Renderer **renderer)
@@ -35,31 +37,18 @@ int initializeSDL(SDL_Window **window, SDL_Renderer **renderer)
 
 void runGame(SDL_Renderer *renderer)
 {
+
     int quit = 0;
-    Texture *noTexture = loadTexture(renderer, "./img/no_texture.png", 0);
 
+    Texture *textures = init_textures(renderer);
     SDL_Event event;
-    // Dans la fonction runGame avant la boucle principale
 
-    // Exemple de plateformes avec les sections correspondantes
-    Platform platforms[] = {
-        {0, 23, 20, 1, 1},
-
-        {20, 10, 5, 1, 0},
-        {10, 10, 5, 1, 0},
-        {10, 11, 5, 1, 0},
-        {0, 18, 5, 1, 0},
-        {0, 19, 2, 5, 0}, // Plateforme de la section 0
-        {0, 24, 25, 1, 0} // Plateforme de la section 0
+    Section sections[] = {
+        *init_section(0),
+        *init_section(1)
     };
-    int numPlatforms = sizeof(platforms) / sizeof(Platform);
 
-    Light lights[] = {
-
-        {15, 8, 4, 0, 0}
-        // Ajoutez plus de lumières selon vos besoins
-    };
-    int numLights = sizeof(lights) / sizeof(Light);
+  
 
     // Exemple de joueur
     Player player = {200, 20, 25, 25, 0, 0, 0, 0, 0, 0};
@@ -98,9 +87,9 @@ void runGame(SDL_Renderer *renderer)
         // Mettre à jour la position du joueur si suffisamment de temps s'est écoulé
         if (deltaTime >= UPDATE_RATE)
         {
-            updatePlayer(&player, keystate, platforms, numPlatforms, currentSection);
+            updatePlayer(&player, keystate, sections[currentSection].platforms, sections[currentSection].numPlatforms);
             // Mettre à jour l'état d'animation des lumières
-            for (int i = 0; i < numLights; i++)
+            /*for (int i = 0; i < numLights; i++)
             {
                 Light *light = &lights[i];
                 light->animationState += 1;
@@ -108,7 +97,7 @@ void runGame(SDL_Renderer *renderer)
                 {
                     light->animationState = 0;
                 }
-            }
+            }*/
             // Mettre à jour le temps de la dernière mise à jour
             lastUpdate = currentTicks;
         }
@@ -117,12 +106,8 @@ void runGame(SDL_Renderer *renderer)
         SDL_SetRenderDrawColor(renderer, 32, 32, 32, 255);
         SDL_RenderClear(renderer);
 
-        // Dessiner les lumières de la section courante uniquement
-        draw_light(renderer, lights, numLights, currentSection);
-        // Dessiner les plateformes de la section courante uniquement
-        draw_platform(renderer, platforms, numPlatforms, currentSection, noTexture);
-        // Dessinez l'image à la position (100, 100) avec sa résolution de base
-
+        draw_section(renderer, &sections[currentSection], &textures);
+        
         // Dessiner les carrés vides
         /*for (int i = 0; i < num_horizontal_squares_light; i++)
         {
@@ -165,10 +150,7 @@ void runGame(SDL_Renderer *renderer)
         if (player.y < 0 - player.height)
         {
             currentSection++;
-            if (currentSection >= numPlatforms)
-            {
-                currentSection = 0;
-            }
+
             // Réinitialiser la position du joueur dans la nouvelle section
             player.y = SCREEN_HEIGHT - player.height;
         }
@@ -176,15 +158,13 @@ void runGame(SDL_Renderer *renderer)
         else if (player.y + player.height > SCREEN_HEIGHT)
         {
             currentSection--;
-            if (currentSection < 0)
-            {
-                currentSection = numPlatforms - 1;
-            }
+
             // Réinitialiser la position du joueur dans la nouvelle section
             player.y = 0;
         }
     }
-    SDL_DestroyTexture(noTexture->texture);
+    free_textures();
+
 }
 
 int main()

@@ -103,7 +103,7 @@ void limitPlayer(Player *player)
     }
 }
 
-void platformCollisionPlayer(Player *player, Platform *platforms, int numPlatforms, int currentSection)
+void platformCollisionPlayer(Player *player, Platform *platforms, int numPlatforms)
 {
     // Variable pour suivre si le joueur se trouve sur une plateforme
     int onPlatform = 0;
@@ -114,7 +114,7 @@ void platformCollisionPlayer(Player *player, Platform *platforms, int numPlatfor
         Platform platform = platforms[i];
 
         // Vérifier si le joueur se chevauche avec la plateforme de la section courante
-        if (platform.section == currentSection &&
+        if (
             player->x < (platform.x + platform.width) * SQUARE_SIZE &&
             (player->x + player->width) > platform.x * SQUARE_SIZE &&
             (player->y + player->height) > platform.y * SQUARE_SIZE &&
@@ -171,7 +171,7 @@ void platformCollisionPlayer(Player *player, Platform *platforms, int numPlatfor
     }
 }
 
-void updatePlayer(Player *player, const Uint8 *keystate, Platform *platforms, int numPlatforms, int currentSection)
+void updatePlayer(Player *player, const Uint8 *keystate, Platform *platforms, int numPlatforms)
 {
     //  Gérer les touches de déplacement du joueur
     movePlayer(player, keystate);
@@ -185,5 +185,5 @@ void updatePlayer(Player *player, const Uint8 *keystate, Platform *platforms, in
     player->x += player->dx;
     player->y += player->dy;
     // Gérer les collisions avec les plateformes de la section courante
-    platformCollisionPlayer(player, platforms, numPlatforms, currentSection);
+    platformCollisionPlayer(player, platforms, numPlatforms);
 }
