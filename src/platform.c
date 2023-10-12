@@ -12,6 +12,8 @@ void draw_platforms(SDL_Renderer *renderer, Platform *platforms, int numPlatform
             {
                 for (int y = platform.y; y < platform.y + platform.height; y++)
                 {
+
+                    //printf("platform texture : %s\n", platform.texture);
                     draw_texture(x, y, renderer, platform.texture);
                 }
             }

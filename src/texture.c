@@ -59,6 +59,7 @@ Texture *loadTexture(SDL_Renderer *renderer, char *imagePath)
 
 void draw_texture(int x, int y, SDL_Renderer *renderer, char *name)
 {
+   
     // Chercher la texture avec le nom spécifié dans la variable globale des textures chargées
     for (int i = 0; i < numLoadedTextures; i++)
     {

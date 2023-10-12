@@ -45,7 +45,8 @@ void runGame(SDL_Renderer *renderer)
 
     Section sections[] = {
         *init_section(0),
-        *init_section(1)
+        *init_section(1),
+        *init_section(2),
     };
 
   
